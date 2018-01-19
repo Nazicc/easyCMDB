@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+{% block title %}User Edit{% endblock %}
+{% block nav_user %}class="active"{% endblock %}
+{% block container %}
+<h2 style="text-align: center;margin-top: 180px;">编辑用户</h2>
+    <form class="form-horizontal" action="{% url 'user:modify' %}" method="POST" style="margin-top: 20px;">
+        {% csrf_token %}
+            <input type="hidden" name="uid" id="uid" value="{{ id }}" >
+            {% if form.name %}
+             <div class="form-group" style="margin-bottom: 0px;">
+              <label class="col-sm-5 control-label"></label>
+              <div class="col-sm-2">
+                <p class="form-control-static" style="color: red;">{{ form.name.0 }}</p>
+              </div>
+             </div>
+           {% endif %}
+            <div class="form-group">
+              <label for="inputName" class="col-sm-5 control-label">用户</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="inputName" placeholder="输入用户名" name="name" value="{{ name }}">
+              </div>
+            </div>
+            {% if form.age %}
+             <div class="form-group" style="margin-bottom: 0px;">
+              <label class="col-sm-5 control-label"></label>
+              <div class="col-sm-2">
+                <p class="form-control-static" style="color: red;">{{ form.age.0 }}</p>
+              </div>
+             </div>
+           {% endif %}
+            <div class="form-group">
+              <label for="inputAge" class="col-sm-5 control-label">输入Age</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="inputAge" placeholder="输入Age" name="age" value="{{ age }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputEmail" class="col-sm-5 control-label">输入Email</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="inputEmail" placeholder="输入Email" name="email" value="{{ email }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputPhone" class="col-sm-5 control-label">输入Phone</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="inputPhone" placeholder="输入Phone" name="telephone" value="{{ telephone }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-5 col-sm-2">
+                <button type="submit" class="btn btn-primary btn-block">Edit</button>
+              </div>
+            </div>
+    </form>
+{% endblock %}

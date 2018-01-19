@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+{% block title %}User List{% endblock %}
+{% block css %}<link rel="stylesheet" href="/static/user/my.css">{% endblock %}
+{% block nav_user %}class="active"{% endblock %}
+{% block container %}
+    <div class="table-responsive col-xs-12">
+        <table class="table table-striped table-bordered table-hover">
+        <p>用户列表  <a class="btn btn-primary btn-xs" href="{% url 'user:create' %}">添加用户</a></p>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>用户名</th>
+                    <th>年龄</th>
+                    <th>电话号码</th>
+                    <th>邮箱地址</th>
+                    <th>注册时间</th>
+                    <th>登陆时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.age }}</td>
+                        <td>{{ user.telephone }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.registe_time }}</td>
+                        <td>{{ user.login_time }}</td>
+                        <td>
+                            <a class="btn btn-success btn-xs" href="/user/edit?id={{ user.id }}">编辑</a>
+                            <a class="btn btn-danger btn-xs" href="/user/delete?id={{ user.id }}">删除</a>
+                        </td>
+                    </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

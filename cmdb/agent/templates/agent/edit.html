@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% block title %}Agent Edit{% endblock %}
+{% block nav_host %}class="active"{% endblock %}
+{% block container %}
+<h2 style="text-align: center;margin-top: 180px;">编辑Agent信息</h2>
+    <form class="form-horizontal" action="{% url 'agent:modify' %}" method="POST" style="margin-top: 20px;">
+        {% csrf_token %}
+            <input type="hidden" name="uuid" id="uuid" value="{{ uuid }}" >
+            {% if form.user %}
+             <div class="form-group" style="margin-bottom: 0px;">
+              <label class="col-sm-5 control-label"></label>
+              <div class="col-sm-2">
+                <p class="form-control-static" style="color: red;">{{ form.user.0 }}</p>
+              </div>
+             </div>
+           {% endif %}
+            <div class="form-group">
+              <label for="inputName" class="col-sm-5 control-label">用户</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="inputName" placeholder="用户名" name="user" value="{{ user }}">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputAge" class="col-sm-5 control-label">应用</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="inputAge" placeholder="应用类型" name="application" value="{{ application }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputEmail" class="col-sm-5 control-label">地址</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="inputEmail" placeholder="服务器位置" name="addr" value="{{ addr }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputPhone" class="col-sm-5 control-label">备注</label>
+              <div class="col-sm-3">
+                  <textarea class="form-control" rows="5" name="remark" value="{{ remark }}"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-5 col-sm-2">
+                <button type="submit" class="btn btn-primary btn-block">提交</button>
+              </div>
+            </div>
+    </form>
+{% endblock %}
