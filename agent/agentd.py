@@ -16,11 +16,6 @@ from plugins.resource import Resource
 
 logger = logging.getLogger(__name__)
 
-parser = argparse.ArgumentParser(prog='agentd', add_help=False)
-parser.add_argument('-H', '--host', dest='host', help='', nargs='+')
-parser.add_argument('-P', '--port', dest='port', help='', nargs='+')
-parser.add_argument('-V', '--verbose', dest='detail', help='', action='store_true')
-args = parser.parse_args()
 
 def main(config):
     ths = {}
@@ -43,33 +38,31 @@ def main(config):
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser(prog='agentd', add_help=False)
+    parser.add_argument('-H', '--host', dest='host', help='', type=str)
+    parser.add_argument('-P', '--port', dest='port', help='', type=int)
+    parser.add_argument('-V', '--verbose', dest='detail', help='', action='store_true')
+    args = parser.parse_args()
+
     config = gconf.Config
 
-    HOST = args.host[0]
-    PORT = args.port[0]
+    HOST = args.host
+    PORT = args.port
     PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
     PID = os.getpid()
 
-    if args.detail:
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s - %(name)s - %(levelname)s:%(message)s',
-            filename=os.path.join(PROJECT_PATH, 'logs', 'agentd.log'),
-            filemode='w',
-        )
-    else:
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s:%(message)s',
-            filename=os.path.join(PROJECT_PATH, 'logs', 'agentd.log'),
-            filemode='w',
-        )
+    log_level = logging.DEBUG if args.detail else logging.INFO
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s:%(message)s',
+        filename=os.path.join(PROJECT_PATH, 'logs', 'agentd.log'),
+        filemode='w',
+    )
 
     setattr(config, 'HOST', HOST)
     setattr(config, 'PORT', PORT)
     setattr(config, 'PROJECT_PATH', PROJECT_PATH)
     setattr(config, 'PID', PID)
-
     setattr(config, 'QUEUE', mqueue.Queue())
 
     PATH_UUID = os.path.join(PROJECT_PATH, 'UUID')
