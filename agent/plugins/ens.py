@@ -20,7 +20,7 @@ class ENS(threading.Thread):
         _config = self.config
         _queue = getattr(_config, 'QUEUE')
         while True:
-            _msg = _queue.get_nowait()
+            _msg = _queue.get()
             if _msg:
                 self.dispatch(_msg)
 

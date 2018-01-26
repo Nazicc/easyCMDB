@@ -22,7 +22,7 @@ class BasePlugin(threading.Thread):
         while True:
             _msg = self.make_msg()
             if _msg:
-                _queue.put_nowait(_msg)
+                _queue.put(_msg)
             time.sleep(_interval)
 
     def make_msg(self):
