@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-
+from django.views.generic import View
 from django.utils import timezone
 from .models import User
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import CreateUserForm
 from .forms import EditUserForm
+from .forms import ChangePasswordForm
+import json
+from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
@@ -38,6 +41,18 @@ def users(request):
         'data': User.objects.all(),
     }
     return  render(request, 'user/users.html',context)
+
+class PasswordChangeView(View):
+    def post(self, request, *args, **kwargs):
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = User.objects.get(id=form.cleaned_data.get('id'))
+            user.set_password(form.cleaned_data.get('password'))
+            user.save()
+            return JsonResponse({'code': 200, 'text': 'success', 'result': None, 'errors': {}})
+        else:
+            return JsonResponse({'code': 400, 'text': 'error', 'result': None, 'errors': json.loads(form.errors.as_json())})
+
 
 def create(request):
     if request.session.get('user') is None:

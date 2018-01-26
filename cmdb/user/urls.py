@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^users/$', view=views.users, name='users'),
     # url(r'^create/$', view=views.create, name='create'),
     url(r'^create/$', TemplateView.as_view(template_name='user/create.html'), name='create'),
+    url(r'^ChangePassword/$', view=views.PasswordChangeView.as_view(), name='ChangePassword'),
     url(r'^save/$', view=views.save, name='save'),
     url(r'^edit/$', view=views.edit, name='edit'),
     url(r'^modify/$', view=views.modify, name='modify'),
