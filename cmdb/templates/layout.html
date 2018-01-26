@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>{% block title %}CMDB{% endblock %}</title>
-    <link rel="stylesheet" href="/static/plugin/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/plugin/bootstrap/bootstrap-theme.min.css">
-    {% block link %}{% endblock %}
-    <script src="/static/plugin/bootstrap/bootstrap.min.js"></script>
-    {% block js %}{% endblock %}
+    <link rel="stylesheet" href="/static/plugin/bootstrap-3.3.7/dist/css/bootstrap.css">
     <!--自己定义的css和js文件的引用要放在bootstrap的后面，防止产生覆盖-->
     {% block css %}{% endblock %}
 </head>
@@ -33,12 +28,90 @@
                         <li {% block nav_host %}{% endblock %}><a href="{% url 'agent:agents' %}">主机管理</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="javascript:void(0);">当前用户:{{ request.session.user.name }}</a></li>
+                        <li><a class='change-password' data-id="{{ request.session.user.id }}" data-name="{{ request.session.user.name }}" href="javascript:void(0);">当前用户:{{ request.session.user.name }}</a></li>
                         <li><a href="{% url 'user:logout' %}">注销</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
-        {% block container %}{% endblock %}
+        {#        change password dialog#}
+<div class="modal fade" id="dialog-change-password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="form-change-password">
+                    <input type="hidden" id="id" name="id" value="" />
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">用户名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="name" placeholder="用户名" name="name" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="oldpassword" class="col-sm-2 control-label">旧密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="oldpassword" placeholder="旧密码" name="oldpassword" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">新密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password" placeholder="新密码" name="password" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password2" class="col-sm-2 control-label">再次输入</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password2" placeholder="再次输入新密码" name="password2" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary btn-save">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+    {% block container %}{% endblock %}
+    {% block dialog %}{% endblock %}
+    <script src="/static/plugin/jquery/jquery-3.3.1.js"></script>
+    <script src="/static/plugin/bootstrap-3.3.7/dist/js/bootstrap.js"></script>
+    <script src="/static/plugin/echarts/echarts.min.js"></script>
+    {% block jsrc %}{% endblock %}
+    <script type="text/javascript">{% block jscript %}{% endblock %}</script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $('a.change-password').click(function () {
+            $('input#id').val($(this).data('id'));
+            $('input#name').val($(this).data('name'));
+            $('#dialog-change-password').modal('show');
+            {#  为了弹出dialog，必须有#}
+        });
+        $('button.btn-save').click(function () {
+            var data= $('#form-change-password').serializeArray();
+            $.post("{% url 'user:ChangePassword' %}", data, function(response) {
+                if (response['code'] == 200){
+                    alert('信息更新成功');
+                    window.location.reload()
+                }else if (response['code'] == 400){
+                    var errors = [];
+                    for(var error in response['errors']) {
+                        errors.push(response['errors'][error][0]['message']);
+                    }
+                    alert(errors.join('\n'));
+                }
+            }, 'json');
+        });
+
+    });
+</script>
 </body>
 </html>
