@@ -5,32 +5,21 @@ from queue import Queue, Empty, Full
 # Empty是Queue队列满时，再从中get时报的ERROR类型
 
 class PyQueue(Queue):
-    # def put(self, item, block=True, timeout=None):
-    #     try:
-    #         super(PyQueue, self).put(item, block, timeout)
-    #         return True
-    #     except Full as e:
-    #         return False
-
-    # def get(self, block=True, timeout=None):
-    #     try:
-    #         return super(PyQueue, self).get(block, timeout)
-    #     except Empty as e:
-    #         return None
-
-    # def qsize(self):
-    #     return super(PyQueue, self).qsize()
-    def put_nowait(self, item):
+    def put(self, item, block=True, timeout=None):
         try:
-            super(PyQueue, self).put_nowait(item)
+            super(PyQueue, self).put(item, block, timeout)
             return True
         except Full as e:
             return False
 
-    def get_nowait(self):
+    def get(self, block=True, timeout=None):
         try:
-            return super(PyQueue, self).get_nowait()
+            return super(PyQueue, self).get(block, timeout)
         except Empty as e:
             return None
+
+    def qsize(self):
+        return super(PyQueue, self).qsize()
+
             
 Queue = PyQueue
