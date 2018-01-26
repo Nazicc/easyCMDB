@@ -3,11 +3,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Client
 from user.models import User
 
-class EditClientForm(forms.Form):
-    uuid = forms.CharField()
-    user = forms.CharField()
-    application = forms.CharField()
-    addr = forms.CharField()
+class  EditClientForm(forms.Form):
+    uuid = forms.CharField(required=True)
+    user = forms.CharField(required=True)
+    application = forms.CharField(required=True)
+    addr = forms.CharField(required=True)
+    remark = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -15,7 +16,7 @@ class EditClientForm(forms.Form):
     def clean_user(self):
         user = self.cleaned_data.get('user', '').strip()
         uuid = self.cleaned_data.get('uuid', '').strip()
-        print(uuid)
+
         try:
             Client.objects.get(uuid=uuid)
         except ObjectDoesNotExist as e:
