@@ -11,9 +11,9 @@
                     <th>#</th>
                     <th>主机名</th>
                     <th>IP地址</th>
-                    <th>平台</th>
-                    <th>CPU</th>
-                    <th>内存</th>
+                    <th>平台/架构</th>
+                    <th>CPU(核)/内存</th>
+                    <th>注册时间</th>
                     <th>用户</th>
                     <th>应用</th>
                     <th>位置</th>
@@ -22,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for agent in data %}
+            {% for agent in object_list %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ agent.hostname }}
@@ -31,16 +31,16 @@
                           {% endif %}
                         </td>
                         <td>{{ agent.ip }}</td>
-                        <td>{{ agent.platform }}</td>
-                        <td>{{ agent.cpu }}</td>
-                        <td>{{ agent.mem }}</td>
+                        <td>{{ agent.paltform }}/{{ agent.arch }}</td>
+                        <td>{{ agent.cpu }}/{{ agent.mem|filesizeformat }}</td>
+                        <td>{{ agent.register_time|date:'Y-m-d H:i:s' }}</td>
                         <td>{{ agent.user }}</td>
                         <td>{{ agent.application }}</td>
                         <td>{{ agent.addr }}</td>
                         <td>{{ agent.remark }}</td>
                         <td>
-                            <a class="btn btn-success btn-xs" href="/agent/edit?uuid={{ agent.uuid }}">编辑</a>
-                            <a class="btn btn-info btn-xs" href="/agent/monitor?uuid={{ agent.uuid }}">监控</a>
+                            <a class="edit btn btn-success btn-xs" href="javascript:void(0);" data-uuid="{{ agent.uuid }}" data-addr="{{ agent.addr }}" data-application="{{ agent.application }}" data-user="{{ agent.user }}" data-remark="{{ agent.remark }}">编辑</a>
+                            <a class="detail btn btn-info btn-xs" href="javascript:void(0);" data-uuid="{{ agent.uuid }}">监控</a>
                             <a class="btn btn-warning btn-xs" href="#">告警</a>
                         </td>
                     </tr>
@@ -48,4 +48,182 @@
             </tbody>
         </table>
     </div>
+{% endblock %}
+{% block dialog %}
+<div class="modal fade" id="dialog-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">编辑服务器信息</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="form-edit">
+                    <input type="hidden" id="uuid" name="uuid" value="" />
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="addr" class="col-sm-2 control-label">机房地址</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="addr" placeholder="机房地址" name="addr" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="application" class="col-sm-2 control-label">应用类别</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="application" placeholder="应用类别" name="application" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="user" class="col-sm-2 control-label">负责人</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="user" placeholder="负责人" name="user" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remark" class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="remark" placeholder="备注" name="remark" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary btn-save">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="dialog-detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">查看</h4>
+            </div>
+            <div class="modal-body">
+                <div id="chart" style="width: 550px;height:300px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-close-detail">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block jscript %}
+    $(document).ready(function(){
+        $('a.edit').click(function() {
+            $('input#uuid').val($(this).data('uuid'));
+            $('input#addr').val($(this).data('addr'));
+            $('input#user').val($(this).data('user'));
+            $('input#application').val($(this).data('application'));
+            $('input#remark').val($(this).data('remark'));
+            $('#dialog-edit').modal('show');   {#  为了弹出dialog，必须有#}
+        });
+
+        $('button.btn-save').click(function(){
+            var data = $('#form-edit').serializeArray();
+            $.post("{% url 'agent:modify' %}", data, function(response){
+                if (response['code'] == 200){
+                    alert('信息更新成功');
+                    window.location.reload()
+                }else if (response['code'] == 400){
+                    var errors = [];
+{#                    response['errors']形如：{'user': [{'code': '', 'message': 'Invalid user.'}]}#}
+                    for(var error in response['errors']) {
+                        errors.push(response['errors'][error][0]['message']);
+                    }
+                    alert(errors.join('\n'));
+                }
+            }, 'json');
+        });
+
+        var chart = echarts.init(document.getElementById('chart'));
+        var th = null;
+        $('a.detail').click(function(){
+            var uuid = $(this).data('uuid');
+            reload(uuid);
+            $('#dialog-detail').modal('show');
+            if(th == null) {
+                th = setInterval(function(){
+                    reload(uuid);
+                }, 10 * 1000);
+            }
+        });
+
+        $('.btn-close-detail').click(function(){
+            if(th != null) {
+                clearInterval(th);
+                th = null;
+            }
+            $('#dialog-detail').modal('hide');
+        });
+
+        function reload(uuid) {
+            $.get("{% url 'agent:resource' %}", {'uuid' : uuid }, function(response){
+                if(response['code'] !== 200) {//response.code
+                    return;
+                }
+
+                var data_xAxis = [];
+                var data_cpu = [];
+                var data_mem = [];
+
+                jQuery.each(response['result'], function(idx, value) {
+                    data_xAxis.unshift(value['time']);
+                    data_cpu.unshift(value['cpu']);
+                    data_mem.unshift(value['mem']);
+                });
+
+                var option = {
+                    title: {
+                        text: 'CPU&内存使用率'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:['CPU使用率', '内存使用率']
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    toolbox: {
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: data_xAxis
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name: 'CPU使用率',
+                            type: 'line',
+                            stack: 'CPU使用率',
+                            data: data_cpu,
+                            smooth: true
+                        },
+                        {
+                            name: '内存使用率',
+                            type: 'line',
+                            stack: 'MEM使用率',
+                            data: data_mem,
+                            smooth: true
+                        },
+                    ]
+                };
+                chart.setOption(option);
+            }, 'json');
+        }
+    });
 {% endblock %}
