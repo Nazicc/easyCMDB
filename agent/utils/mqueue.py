@@ -1,5 +1,4 @@
 #encoding: utf-8
-
 from queue import Queue, Empty, Full
 # Full是Queue队列满时，再向内put时报的ERROR类型
 # Empty是Queue队列满时，再从中get时报的ERROR类型

@@ -1,14 +1,13 @@
 #encoding: utf-8
-
 import os
 import argparse
 import logging
 import time
 
 import gconf
+
 from utils import fileutils, sysutils
 from utils import mqueue
-
 from plugins.ens import ENS
 from plugins.client import Client
 from plugins.heartbeat import Heartbeat
@@ -31,7 +30,6 @@ def main(config):
                 logger.error('threading[%s] is dead and restart', key)
                 value['threading'] = value['class'](config)
                 value['threading'].start()
-
         time.sleep(3)
 
 

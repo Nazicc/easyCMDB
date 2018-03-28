@@ -1,9 +1,7 @@
 #encoding: utf-8
 
 import logging
-
 import psutil
-
 from .base import BasePlugin
 
 

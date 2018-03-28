@@ -1,7 +1,0 @@
-2018-01-18 09:36:42,031 - __main__ - INFO:agentd is starting...
-2018-01-18 09:36:42,032 - __main__ - INFO:PID: 1599
-2018-01-18 09:36:42,032 - __main__ - INFO:UUID: 9e468e98fa6711e799d2784f439c1853
-2018-01-18 09:36:42,032 - __main__ - ERROR:threading[ens] is dead and restart
-2018-01-18 09:36:42,038 - __main__ - ERROR:threading[client] is dead and restart
-2018-01-18 09:36:42,049 - __main__ - ERROR:threading[heartbeat] is dead and restart
-2018-01-18 09:36:42,058 - __main__ - ERROR:threading[resource] is dead and restart
