@@ -13,11 +13,9 @@ from django.views.generic import TemplateView
 app_name = 'user'
 
 urlpatterns = [
-    # url(r'^$', view=views.index, name='index'),
     url(r'^$', TemplateView.as_view(template_name='user/login.html'), name='index'),
     url(r'^login/$', view=views.login, name='login'),
     url(r'^users/$', view=views.users, name='users'),
-    # url(r'^create/$', view=views.create, name='create'),
     url(r'^create/$', TemplateView.as_view(template_name='user/create.html'), name='create'),
     url(r'^ChangePassword/$', view=views.PasswordChangeView.as_view(), name='ChangePassword'),
     url(r'^save/$', view=views.save, name='save'),

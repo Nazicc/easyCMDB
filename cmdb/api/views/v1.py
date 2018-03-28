@@ -8,20 +8,6 @@ from agent.models import Resource
 from .base import APIView
 import time
 # Create your views here.
-# class TestView(View):
-#     # close CSRF check
-#     @csrf_exempt
-#     def dispatch(self, request, *args, **kwargs):
-#         return super().dispatch(request, *args, **kwargs)
-#
-#     # HTTP POST
-#     def post(self, request, *args, **kwargs):
-#         return HttpResponse('class view post')
-#
-#     # HTTP GET
-#     def get(self, request, *args, **kwargs):
-#         return HttpResponse('class view get')
-
 
 class RegisterView(APIView):
     def post(self, request, *args, **kwargs):
